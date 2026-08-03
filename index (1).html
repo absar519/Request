@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Malkin</title>
+<style>
+  :root{
+    --bg-1:#120910;
+    --bg-2:#1c0e18;
+    --bg-3:#0a0509;
+    --glow-pink:#ff9ec4;
+    --glow-pink-soft: rgba(255,158,196,0.35);
+    --paper:#faf5ec;
+    --paper-edge:#f1e7d8;
+    --ink:#3a2c26;
+    --ink-soft:#6b584e;
+    --accent:#e0537a;
+    --accent-2:#c9426b;
+    --gold:#cba36b;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255,158,196,0.12), transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(200,80,120,0.10), transparent 70%),
+      linear-gradient(160deg, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-3) 100%);
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', 'Iowan Old Style', serif;
+    overflow-x:hidden;
+    cursor:auto;
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 48px 18px 90px;
+    position:relative;
+    opacity:0;
+    animation: pageFadeIn 1.8s ease forwards;
+  }
+
+  @keyframes pageFadeIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* ---------- Ambient particle layer ---------- */
+  #ambient{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:0;
+  }
+  .particle{
+    position:absolute;
+    bottom:-40px;
+    opacity:0;
+    will-change: transform, opacity;
+    animation-name: floatUp;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  .particle.heart{
+    color: var(--accent);
+    filter: drop-shadow(0 0 6px rgba(224,83,122,0.55));
+  }
+  .particle.spark{
+    background: radial-gradient(circle, #fff 0%, var(--glow-pink) 40%, transparent 75%);
+    border-radius:50%;
+    box-shadow: 0 0 8px 2px rgba(255,158,196,0.5);
+  }
+
+  @keyframes floatUp{
+    0%{
+      transform: translate(0,0) rotate(0deg) scale(1);
+      opacity:0;
+    }
+    8%{ opacity: var(--peak-op, 0.55); }
+    50%{
+      transform: translate(var(--drift, 20px), -52vh) rotate(var(--rot, 12deg)) scale(1.05);
+    }
+    92%{ opacity: var(--peak-op, 0.55); }
+    100%{
+      transform: translate(calc(var(--drift, 20px) * 1.6), -105vh) rotate(calc(var(--rot, 12deg) * 2)) scale(0.9);
+      opacity:0;
+    }
+  }
+
+  /* ---------- Layout wrapper ---------- */
+  .stage{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:720px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---------- Envelope ---------- */
+  .envelope-wrap{
+    margin-bottom:56px;
+    animation: envFloat 6s ease-in-out infinite;
+  }
+  @keyframes envFloat{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-14px); }
+  }
+
+  .envelope{
+    position:relative;
+    width:150px;
+    height:100px;
+    background: linear-gradient(160deg, #fbf2e4, #eaddc6);
+    border-radius:8px;
+    box-shadow:
+      0 18px 40px -12px rgba(0,0,0,0.55),
+      0 0 60px 6px var(--glow-pink-soft);
+  }
+  .envelope::before{
+    /* flap */
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:0; height:0;
+    border-left: 75px solid transparent;
+    border-right: 75px solid transparent;
+    border-top: 58px solid #f3e6d1;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+  }
+  .envelope::after{
+    /* subtle bottom shading for depth */
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:45%;
+    background: linear-gradient(0deg, rgba(0,0,0,0.08), transparent);
+    border-radius: 0 0 8px 8px;
+  }
+
+  .wax-seal{
+    position:absolute;
+    top:38px;
+    left:50%;
+    transform: translateX(-50%);
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    background: radial-gradient(circle at 32% 30%, #e8607f, var(--accent-2) 55%, #8f2745 100%);
+    box-shadow:
+      0 6px 10px rgba(0,0,0,0.4),
+      inset 0 2px 3px rgba(255,255,255,0.35),
+      inset 0 -4px 6px rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:3;
+  }
+  .wax-seal span{
+    font-family: 'Brush Script MT', cursive, Georgia, serif;
+    color:#ffe3ea;
+    font-size:20px;
+    line-height:1;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+    transform: translateY(-1px);
+  }
+
+  /* ---------- The Letter (Paper) ---------- */
+  .paper-glow{
+    position:relative;
+    width:100%;
+  }
+  .paper-glow::before{
+    content:"";
+    position:absolute;
+    inset:-40px;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, var(--glow-pink-soft), transparent 70%);
+    filter: blur(10px);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .paper{
+    position:relative;
+    z-index:1;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(0,0,0,0.02), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(0,0,0,0.025), transparent 40%),
+      linear-gradient(180deg, var(--paper), var(--paper-edge));
+    border-radius: 18px;
+    padding: 56px 48px 44px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,0.65),
+      0 10px 30px -10px rgba(0,0,0,0.4),
+      inset 0 0 40px rgba(120,90,60,0.06);
+    transition: transform 0.6s cubic-bezier(.2,.8,.2,1), box-shadow 0.6s ease;
+    backdrop-filter: blur(2px);
+  }
+  .paper:hover{
+    transform: translateY(-6px) scale(1.008);
+    box-shadow:
+      0 40px 80px -20px rgba(0,0,0,0.7),
+      0 14px 40px -10px rgba(224,83,122,0.25),
+      inset 0 0 40px rgba(120,90,60,0.06);
+  }
+
+  /* subtle paper fiber texture via layered gradients */
+  .paper::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:18px;
+    opacity:0.5;
+    pointer-events:none;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.008) 0px, rgba(0,0,0,0.008) 1px, transparent 1px, transparent 4px);
+    mix-blend-mode: multiply;
+  }
+
+  .rule{
+    text-align:center;
+    letter-spacing:2px;
+    color:var(--gold);
+    font-size:14px;
+    opacity:0.7;
+    margin-bottom:28px;
+    user-select:none;
+  }
+
+  .letter-body{
+    font-size: 17px;
+    line-height:1.9;
+    color:var(--ink);
+  }
+
+  .letter-body p{
+    margin:0 0 20px;
+  }
+
+  .to-line{
+    margin-bottom:4px !important;
+  }
+  .malkin-line{
+    font-size:22px;
+    font-style: italic;
+    color:var(--accent-2);
+    margin-bottom:22px !important;
+  }
+  .subject-line{
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-bottom: 26px !important;
+  }
+
+  .signoff{
+    margin-top: 32px;
+  }
+  .signoff .name{
+    font-style: italic;
+    font-size:20px;
+    color:var(--accent-2);
+    display:inline-block;
+    margin-top:4px;
+  }
+
+  .glow-word{
+    color: var(--accent-2);
+    text-shadow: 0 0 10px rgba(224,83,122,0.55), 0 0 22px rgba(224,83,122,0.25);
+    font-weight:600;
+  }
+
+  .rule.bottom{
+    margin-top:32px;
+    margin-bottom:0;
+  }
+
+  /* ---------- Music Player ---------- */
+  .player{
+    margin-top:70px;
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius:22px;
+    padding: 20px 22px 18px;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+      0 20px 50px -18px rgba(0,0,0,0.6),
+      0 0 40px rgba(255,158,196,0.08),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    color:#f5e9ee;
+  }
+
+  .player-top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+
+  .art{
+    width:56px;
+    height:56px;
+    border-radius:14px;
+    flex-shrink:0;
+    background:
+      radial-gradient(circle at 30% 30%, #ffd7e4, #e0537a 55%, #6c1f3d 100%);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.25);
+    position:relative;
+    overflow:hidden;
+  }
+  .art::before{
+    content:"♥";
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .art.spinning{
+    animation: spinArt 8s linear infinite;
+  }
+  @keyframes spinArt{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+  }
+
+  .track-info{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+  .track-title{
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:0.2px;
+    color:#fff0f4;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .track-sub{
+    font-size:12px;
+    color: rgba(255,230,238,0.55);
+    font-style:italic;
+    margin-top:2px;
+  }
+
+  .play-btn{
+    margin-left:auto;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    border:none;
+    background: linear-gradient(160deg, #ff8fb3, var(--accent-2));
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 8px 20px rgba(224,83,122,0.45);
+    flex-shrink:0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .play-btn:hover{
+    transform: scale(1.06);
+    box-shadow: 0 10px 26px rgba(224,83,122,0.6);
+  }
+  .play-btn:active{
+    transform: scale(0.95);
+  }
+  .play-btn svg{ width:16px; height:16px; }
+
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .time{
+    font-size:11px;
+    color: rgba(255,230,238,0.6);
+    width:36px;
+    flex-shrink:0;
+    font-variant-numeric: tabular-nums;
+    text-align:center;
+  }
+
+  .progress-bar{
+    position:relative;
+    flex:1;
+    height:6px;
+    border-radius:4px;
+    background: rgba(255,255,255,0.14);
+    cursor:pointer;
+    overflow:hidden;
+  }
+  .progress-fill{
+    position:absolute;
+    top:0; left:0; bottom:0;
+    width:0%;
+    background: linear-gradient(90deg, #ffb3cc, var(--accent-2));
+    border-radius:4px;
+  }
+  .progress-bar:hover .progress-fill{
+    filter: brightness(1.1);
+  }
+
+  .volume-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .volume-row svg{ width:16px; height:16px; opacity:0.7; flex-shrink:0; }
+
+  input[type="range"].volume{
+    -webkit-appearance:none;
+    appearance:none;
+    flex:1;
+    height:5px;
+    border-radius:4px;
+    background: rgba(255,255,255,0.14);
+    outline:none;
+  }
+  input[type="range"].volume::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:13px; height:13px;
+    border-radius:50%;
+    background:#ffd7e4;
+    box-shadow: 0 0 6px rgba(255,158,196,0.7);
+    cursor:pointer;
+  }
+  input[type="range"].volume::-moz-range-thumb{
+    width:13px; height:13px;
+    border:none;
+    border-radius:50%;
+    background:#ffd7e4;
+    box-shadow: 0 0 6px rgba(255,158,196,0.7);
+    cursor:pointer;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:46px;
+    font-size:13px;
+    letter-spacing:0.5px;
+    color: rgba(255,230,238,0.45);
+    font-style: italic;
+    text-align:center;
+  }
+  footer .heart-mark{
+    color: var(--accent);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 600px){
+    .paper{ padding: 40px 24px 32px; border-radius:14px; }
+    .letter-body{ font-size:15.5px; line-height:1.8; }
+    .malkin-line{ font-size:19px; }
+    body{ padding: 32px 14px 70px; }
+    .envelope{ width:130px; height:86px; }
+    .envelope::before{ border-left-width:65px; border-right-width:65px; border-top-width:50px; }
+    .player{ padding:16px 16px 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="ambient"></div>
+
+<div class="stage">
+
+  <div class="envelope-wrap">
+    <div class="envelope">
+      <div class="wax-seal"><span>M</span></div>
+    </div>
+  </div>
+
+  <div class="paper-glow">
+    <div class="paper">
+      <div class="rule">━━━━━━━━━━━━━━━━━━━━</div>
+
+      <div class="letter-body">
+        <p class="to-line">To,</p>
+        <p class="malkin-line">My Malkin ❤️</p>
+        <p class="subject-line">Subject: Regarding Your Instagram Password</p>
+
+        <p>Dear Mam,</p>
+
+        <p>I hope you are doing well. Through this letter, I would like to inform you that I am a sincere student of your <span class="glow-word">heart</span>. For the past few days, I have been suffering from a serious condition called &ldquo;Password Deficiency Syndrome&rdquo; because you are not sharing your Instagram <span class="glow-word">password</span> with me.</p>
+
+        <p>I promise that I will take proper care of your account just like I take care of your <span class="glow-word">smile</span>. Every day I pray to God that one day this poor servant may receive the precious gift of your <span class="glow-word">password</span>.</p>
+
+        <p>Without your <span class="glow-word">password</span>, my heart feels incomplete, my curiosity remains unsatisfied, and my overthinking reaches dangerous levels. Therefore, I kindly request you to grant me access to your Instagram password for a few days and save me from this unbearable pain.</p>
+
+        <p>I shall remain forever <span class="glow-word">grateful</span> for your <span class="glow-word">kindness</span> and generosity.</p>
+
+        <p>Thanking You,</p>
+
+        <p class="signoff">
+          Yours Obediently,<br>
+          <span class="name">Your Baby Giraffe ❤️</span>
+        </p>
+      </div>
+
+      <div class="rule bottom">━━━━━━━━━━━━━━━━━━━━</div>
+    </div>
+  </div>
+
+  <audio id="bgMusic" autoplay loop preload="metadata">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="player">
+    <div class="player-top">
+      <div class="art" id="albumArt"></div>
+      <div class="track-info">
+        <div class="track-title" id="trackTitle">Our Song</div>
+        <div class="track-sub">for my Malkin</div>
+      </div>
+      <button class="play-btn" id="playBtn" aria-label="Play or pause">
+        <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+    </div>
+
+    <div class="progress-row">
+      <span class="time" id="currentTime">0:00</span>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <span class="time" id="duration">0:00</span>
+    </div>
+
+    <div class="volume-row">
+      <svg viewBox="0 0 24 24" fill="#f5e9ee"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
+      <input type="range" class="volume" id="volumeSlider" min="0" max="1" step="0.01" value="0.8">
+    </div>
+  </div>
+
+  <footer>Made with <span class="heart-mark">❤️</span> only for My Malkin</footer>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Ambient hearts & sparkles ---------- */
+  const ambient = document.getElementById('ambient');
+  const TOTAL = 26;
+
+  function randBetween(a,b){ return a + Math.random()*(b-a); }
+
+  for(let i=0; i<TOTAL; i++){
+    const el = document.createElement('div');
+    const isHeart = Math.random() < 0.55;
+    el.className = 'particle ' + (isHeart ? 'heart' : 'spark');
+
+    const left = randBetween(0,100);
+    const size = isHeart ? randBetween(10,20) : randBetween(3,7);
+    const duration = randBetween(14, 30);
+    const delay = randBetween(0, 22);
+    const drift = randBetween(-60, 60);
+    const rot = randBetween(-20, 20);
+    const peakOp = randBetween(0.25, 0.6);
+
+    el.style.left = left + '%';
+    el.style.animationDuration = duration + 's';
+    el.style.animationDelay = '-' + delay + 's';
+    el.style.setProperty('--drift', drift + 'px');
+    el.style.setProperty('--rot', rot + 'deg');
+    el.style.setProperty('--peak-op', peakOp);
+
+    if(isHeart){
+      el.style.fontSize = size + 'px';
+      el.textContent = '❤';
+    } else {
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+    }
+
+    ambient.appendChild(el);
+  }
+
+  /* ---------- Music player logic ---------- */
+  const audio = document.getElementById('bgMusic');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationEl = document.getElementById('duration');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const albumArt = document.getElementById('albumArt');
+
+  function formatTime(sec){
+    if(!isFinite(sec) || isNaN(sec)) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m + ':' + (s < 10 ? '0' + s : s);
+  }
+
+  function setPlayingUI(isPlaying){
+    playIcon.style.display = isPlaying ? 'none' : 'block';
+    pauseIcon.style.display = isPlaying ? 'block' : 'none';
+    albumArt.classList.toggle('spinning', isPlaying);
+  }
+
+  audio.volume = parseFloat(volumeSlider.value);
+
+  // Attempt autoplay; if blocked by the browser, wait for a user gesture.
+  const tryPlay = () => {
+    const p = audio.play();
+    if(p !== undefined){
+      p.then(() => setPlayingUI(true)).catch(() => setPlayingUI(false));
+    }
+  };
+  tryPlay();
+
+  document.addEventListener('click', function firstGesture(){
+    if(audio.paused){ tryPlay(); }
+    document.removeEventListener('click', firstGesture);
+  }, { once:true });
+
+  playBtn.addEventListener('click', function(){
+    if(audio.paused){ tryPlay(); } else { audio.pause(); setPlayingUI(false); }
+  });
+
+  audio.addEventListener('play', () => setPlayingUI(true));
+  audio.addEventListener('pause', () => setPlayingUI(false));
+
+  audio.addEventListener('loadedmetadata', () => {
+    durationEl.textContent = formatTime(audio.duration);
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+    progressFill.style.width = pct + '%';
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+    if(audio.duration) durationEl.textContent = formatTime(audio.duration);
+  });
+
+  progressBar.addEventListener('click', (e) => {
+    const rect = progressBar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    if(audio.duration){
+      audio.currentTime = Math.max(0, Math.min(1, ratio)) * audio.duration;
+    }
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    audio.volume = parseFloat(volumeSlider.value);
+  });
+})();
+</script>
+</body>
+</html>
