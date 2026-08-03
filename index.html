@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A Letter For My Malkin ❤️</title>
+<meta name="description" content="A private, handwritten-style letter — open the envelope to read it." />
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       ENVELOPE SCREEN — the landing scene
+  ============================================================= -->
+  <section id="envelope-screen" class="screen" aria-label="Envelope landing screen">
+    <div class="ambient-glow" aria-hidden="true"></div>
+
+    <div class="envelope-wrap">
+      <h1 class="envelope-title">A Letter For My Malkin <span class="heart">❤️</span></h1>
+
+      <div id="envelope" class="envelope" aria-hidden="true">
+        <div class="envelope-back"></div>
+        <div class="envelope-letter-peek"></div>
+        <div class="envelope-flap"></div>
+        <div class="wax-seal">
+          <span class="wax-heart">❤</span>
+        </div>
+      </div>
+
+      <button id="open-btn" class="open-btn" type="button">Open My Letter</button>
+      <p class="envelope-hint">turn your sound on 🎧</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       LETTER SCREEN — the paper itself
+  ============================================================= -->
+  <main id="letter-screen" class="screen hidden" aria-label="Love letter">
+    <div class="paper-stage">
+      <article id="paper" class="paper">
+
+        <div class="paper-texture" aria-hidden="true"></div>
+        <div class="glow-heart-decor top" aria-hidden="true"></div>
+        <div class="glow-heart-decor mid" aria-hidden="true"></div>
+        <div class="corner-heart" aria-hidden="true">♥</div>
+
+        <header class="letter-head">
+          <p class="letter-line">To,</p>
+          <p class="letter-line strong">My Malkin ❤️</p>
+          <p class="letter-line subject"><em>Subject: A Small Request From Your Ghulam's Heart</em></p>
+          <p class="letter-line salutation">Dear Mam,</p>
+        </header>
+
+        <!-- ==========================================================
+             LETTER BODY — typing animation is injected here by script.js
+             PASTE-YOUR-LETTER-HERE: replace the sample paragraphs inside
+             the LETTER_TEXT array at the top of script.js with your own
+             text. Do not edit anything below manually — it is generated.
+        =========================================================== -->
+        <div id="letter-body" class="letter-body" aria-live="polite"></div>
+
+        <footer id="letter-signature" class="letter-signature hidden">
+          <p>Forever Yours,</p>
+          <p>Your Obediently,</p>
+          <p>Your Ghulam <span class="heart">❤️</span></p>
+        </footer>
+
+        <div id="final-scene" class="final-scene hidden">
+          <div class="beating-heart" aria-hidden="true">❤</div>
+          <p class="final-message">Every password is optional... but your trust means everything to me. <span class="heart">❤️</span></p>
+          <button id="replay-btn" class="replay-btn" type="button">❤️ Read Again</button>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       PETALS + FLOATING HEARTS + CURSOR PARTICLE LAYERS
+  ============================================================= -->
+  <div id="petal-layer" class="petal-layer" aria-hidden="true"></div>
+  <div id="hearts-layer" class="hearts-layer" aria-hidden="true"></div>
+  <div id="cursor-layer" class="cursor-layer" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       MUSIC PLAYER — fixed at bottom, starts after envelope opens
+       PASTE-YOUR-MUSIC-HERE: drop your own file at assets/music.mp3
+       (and optionally assets/album-art.jpg) — everything else works
+       automatically once those files exist.
+  ============================================================= -->
+  <div id="music-player" class="music-player hidden" aria-label="Music player">
+    <div class="album-art">
+      <div class="album-art-inner"></div>
+    </div>
+    <div class="player-main">
+      <div class="player-row">
+        <button id="play-pause-btn" class="play-pause-btn" type="button" aria-label="Play or pause music">
+          <svg id="icon-play" viewBox="0 0 24 24" width="16" height="16"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          <svg id="icon-pause" viewBox="0 0 24 24" width="16" height="16" class="hidden"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+        </button>
+        <span class="time current" id="time-current">0:00</span>
+        <input id="progress-bar" class="progress-bar" type="range" min="0" max="100" value="0" step="0.1" aria-label="Song progress">
+        <span class="time total" id="time-total">0:00</span>
+      </div>
+      <div class="player-sub">
+        <span class="song-title">A Letter, Set to Music</span>
+        <div class="volume-wrap">
+          <svg viewBox="0 0 24 24" width="14" height="14" class="volume-icon"><path d="M3 10v4h4l5 5V5L7 10H3z" fill="currentColor"/></svg>
+          <input id="volume-bar" class="volume-bar" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volume">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bg-audio" src="assets/music.mp3" preload="auto" loop></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
